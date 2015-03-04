@@ -32,7 +32,7 @@ iOS:
 	source.ios.dir=/where/your/raw/assets/are
 	target.ios.dir=/your/app/ios/images/
 	
-### Examples
+### Example
 
 Let's say, you have an image in SVG and you want to display it with an height of 150px in the highest resolution.
 
