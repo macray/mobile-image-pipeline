@@ -1,4 +1,4 @@
-![](logo/logo.png)
+![](https://raw.githubusercontent.com/macray/mobile-image-pipeline/master/logo.png)
 
 #Mobile Image Pipeline
 
@@ -68,13 +68,6 @@ Then update those 2 lines:
 
 
 # More details
-##Multiple configurations
-
-You can add as many configuration you'd like
-
-	java -jar {jar file name} icons.properties thumbnails.properties other.properties
-
-
 
 ## Available filters
 Filter name  | Description | Example
@@ -124,12 +117,23 @@ source.ios.dir | folder where your source images can be found | mandatory
 target.ios.dir | destination folder | mandatory
 target.ios.densities | select which densities you'd like to have generated | x1,x2,x3
 
+##Multiple configurations
+
+You can add as many configuration you'd like
+
+	java -jar {jar file name} icons.properties thumbnails.properties other.properties
+
+
 
 ## Common mistake
 
 Common mistake "_" instead of "-", vice and versa
 
-## Feedback & push request are welcome
+
+
+
+
+# Feedback & push request are welcome
 
 Please let me know if you think the documentation is unclear.
 
