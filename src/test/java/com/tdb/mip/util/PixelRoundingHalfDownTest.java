@@ -21,5 +21,10 @@ public class PixelRoundingHalfDownTest {
 		ASSERT.that(rounding.round(1.5f)).isEqualTo(1); // different result than RoundingUp
 		ASSERT.that(rounding.round(1.6f)).isEqualTo(2);
 	}
+	
+	@Test 
+	public void bugfix_rounding_should_works_with_big_number_too() {
+		ASSERT.that(rounding.round(12345678.2f)).isEqualTo(12345678);
+	}
 
 }

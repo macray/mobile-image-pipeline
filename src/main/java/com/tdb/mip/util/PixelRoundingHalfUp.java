@@ -11,6 +11,7 @@ public class PixelRoundingHalfUp implements PixelRounding {
 	public PixelRoundingHalfUp() {
 	 numberFormat = NumberFormat.getNumberInstance(Locale.US);
 	 numberFormat.setMaximumFractionDigits(0);
+	 numberFormat.setGroupingUsed(false);
 	 numberFormat.setRoundingMode(RoundingMode.HALF_UP);
 	}
 
