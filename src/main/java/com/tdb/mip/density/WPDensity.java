@@ -6,7 +6,7 @@ import java.util.List;
 
 public class WPDensity {
 
-	public static Density _1 = new Density("1", "", 1.0f); // WP + Windows Store
+	public static Density _1 = new Density("x1", "", 1.0f); // WP + Windows Store
 	public static Density _1_4 = new Density("1.4", "@2x", 1.4f); // WP + Windows Store
 	public static Density _1_8 = new Density("1.8", "@3x", 1.8f); // Windows Store
 	public static Density _2_4 = new Density("2.4", "@3x", 2.4f); // WP

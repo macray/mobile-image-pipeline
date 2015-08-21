@@ -6,6 +6,8 @@ import com.tdb.mip.pipeline.AndroidPipelineFactory;
 import com.tdb.mip.pipeline.IOSPipelineFactory;
 import com.tdb.mip.pipeline.PipelineExecutor;
 import com.tdb.mip.pipeline.PipelineExecutorImpl;
+import com.tdb.mip.pipeline.WindowsPhonePipelineFactory;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -21,7 +23,7 @@ public class AppModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        List<FilterFactory> filterFactories = new LinkedList<>();
+        List<FilterFactory<?>> filterFactories = new LinkedList<>();
         filterFactories.add(new AutoCropFactory());
         filterFactories.add(new ResizeFactory());
         filterFactories.add(new FillSquareFactory());
@@ -29,19 +31,29 @@ public class AppModule extends AbstractModule {
         filterFactories.add(new VFlipFactory());
         filterFactories.add(new HFlipFactory());
         filterFactories.add(new BlackAndWhiteFactory());
+        filterFactories.add(new FillToFactory());
 
         AndroidPipelineFactory androidPipelineFactory = new AndroidPipelineFactory();
-        for (FilterFactory filterFactory : filterFactories) {
+        for (FilterFactory<?> filterFactory : filterFactories) {
             androidPipelineFactory.registerFilterFactory(filterFactory);
         }
-
+        androidPipelineFactory.addMarker("icon");
+        
         IOSPipelineFactory iosPipelineFactory = new IOSPipelineFactory();
-        for (FilterFactory filterFactory : filterFactories) {
+        for (FilterFactory<?> filterFactory : filterFactories) {
             iosPipelineFactory.registerFilterFactory(filterFactory);
         }
 
+        WindowsPhonePipelineFactory wpPipelineFactory = new WindowsPhonePipelineFactory();
+        for (FilterFactory<?> filterFactory : filterFactories) {
+        	wpPipelineFactory.registerFilterFactory(filterFactory);
+        }
+        wpPipelineFactory.addMarker("appbar");
+        wpPipelineFactory.addMarker("noreorder");
+        
         bind(AndroidPipelineFactory.class).toInstance(androidPipelineFactory);
         bind(IOSPipelineFactory.class).toInstance(iosPipelineFactory);
+        bind(WindowsPhonePipelineFactory.class).toInstance(wpPipelineFactory);
 
         Configuration configuration = new Configuration();
         try {

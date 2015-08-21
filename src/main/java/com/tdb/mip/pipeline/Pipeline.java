@@ -16,14 +16,21 @@ public class Pipeline {
     private ImageWriter imageWriter;
     private File sourceFile;
     private String outFileName;
-    // TODO: Android specific values should be removed
-    // FIXME: create Density interface shared by iOS and Android
     private List<Density> targetDensities;
-
+    private boolean disallowResizeReordering = false;
+    
     public Pipeline() {
     }
+    
+    public boolean isDisallowResizeReordering() {
+		return disallowResizeReordering;
+	}
 
-    public List<Density> getTargetDensities() {
+	public void setDisallowResizeReordering(boolean disallowResizeReordering) {
+		this.disallowResizeReordering = disallowResizeReordering;
+	}
+
+	public List<Density> getTargetDensities() {
         return targetDensities;
     }
 

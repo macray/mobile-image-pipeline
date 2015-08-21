@@ -1,14 +1,5 @@
 package com.tdb.mip.pipeline;
 
-import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.tdb.mip.Configuration;
 import com.tdb.mip.exception.AmbigiousFilterDescriptionException;
 import com.tdb.mip.exception.FilterDescriptionNotUnderstoodException;
@@ -20,15 +11,28 @@ import com.tdb.mip.reader.ImageReader;
 import com.tdb.mip.reader.SVGImageReader;
 import com.tdb.mip.util.PixelRoundingHalfDown;
 import com.tdb.mip.writer.PNGImageWriter;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 public class BasePipelineFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BasePipelineFactory.class);
 
 	private final List<FilterFactory<?>> filterFactories = new LinkedList<>();
+	private final List<String> markers = new LinkedList<>();
 
 	public void registerFilterFactory(FilterFactory<?> filterFactory) {
 		filterFactories.add(filterFactory);
+	}
+	
+	public void addMarker(String markerName) {
+		markers.add(markerName);
 	}
 
 	public Pipeline createPipeline(File file, Configuration configuration) {
@@ -72,6 +76,19 @@ public class BasePipelineFactory {
 
 	public void buildFiltersFromDescriptions(List<Filter> filters, List<FilterDescription> filterDescriptions, Pipeline pipeline) {
 		for (FilterDescription description : filterDescriptions) {
+			
+			// ignore marker
+			boolean isMarker = false;
+			for(String markerName : markers) {
+				if(markerName.equals(description.getRawDescription())){
+					isMarker = true;
+                    break;
+				}
+			}
+			if(isMarker) {
+				continue;
+			}
+			
 			int numberOfFilterCreated = 0;
 			for (FilterFactory<?> factory : filterFactories) {
 				if (factory.canBuild(description)) {

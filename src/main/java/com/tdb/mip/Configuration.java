@@ -1,31 +1,31 @@
 package com.tdb.mip;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.tdb.mip.density.AndroidDensity;
 import com.tdb.mip.density.Density;
 import com.tdb.mip.density.DensityUtils;
-import com.tdb.mip.density.AndroidDensity;
 import com.tdb.mip.density.IOSDensity;
 import com.tdb.mip.exception.MissingConfigPropertyException;
 import com.tdb.mip.filter.Filter;
 import com.tdb.mip.filter.FilterDescription;
 import com.tdb.mip.pipeline.BasePipelineFactory;
 import com.tdb.mip.pipeline.Pipeline;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
 
 public class Configuration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
+    // windows phone
+    private static final int WP_MANDATORY_PROPERTY_COUNT = 2;
+    private static final String TARGET_WP_DIR = "target.wp.dir";
+    private static final String SOURCE_WP_DIR = "source.wp.dir";
+    
     // ios
     private static final int IOS_MANDATORY_PROPERTY_COUNT = 2;
     private static final String TARGET_IOS_DIR = "target.ios.dir";
@@ -54,6 +54,9 @@ public class Configuration {
     private String iosTargetDir;
     private List<Density> iosTargetDensities;
 
+    private String wpSourceDir;
+    private String wpTargetDir;
+    
 	private List<String> sourceAllowedExtensions;
     private String preFiltersDescription;
     private String postFiltersDescription;
@@ -61,7 +64,8 @@ public class Configuration {
 
     private boolean hasIosConfiguration;
     private boolean hasAndroidConfiguration;
-
+    private boolean hasWindowsPhoneConfiguration;
+    
     private boolean recursiveLoad;
 
     public boolean hasIosConfiguration() {
@@ -70,6 +74,10 @@ public class Configuration {
 
     public boolean hasAndroidConfiguration() {
         return hasAndroidConfiguration;
+    }
+    
+    public boolean hasWindowsPhoneConfiguration() {
+    	return hasWindowsPhoneConfiguration;
     }
 
     public List<Filter> getPreFilters(BasePipelineFactory basePipelineFactory, Pipeline pipeline) {
@@ -125,6 +133,29 @@ public class Configuration {
         return recursiveLoad;
     }
 
+    private void loadWindowsPhoneConfig(Properties props) {
+    	 List<String> missingProperties = new LinkedList<>();
+
+        wpSourceDir = props.getProperty(SOURCE_WP_DIR);
+        if (isEmpty(wpSourceDir)) {
+            missingProperties.add(SOURCE_WP_DIR);
+        }
+
+        wpTargetDir = props.getProperty(TARGET_WP_DIR);
+        if (isEmpty(wpTargetDir)) {
+            missingProperties.add(TARGET_WP_DIR);
+        }
+
+        boolean allAndroidPropertiesAreMissing = missingProperties.size() == WP_MANDATORY_PROPERTY_COUNT;
+        if (!isEmpty(missingProperties) && !allAndroidPropertiesAreMissing) {
+            throw new MissingConfigPropertyException("properties " + missingProperties.toString() + " are missing");
+        }
+
+        if (missingProperties.size() == 0) {
+            hasWindowsPhoneConfiguration = true;
+        }
+    }
+    
     private void loadAndroidConfig(Properties props) {
         List<String> missingProperties = new LinkedList<>();
 
@@ -221,9 +252,10 @@ public class Configuration {
         loadGenericConfig(props);
         loadAndroidConfig(props);
         loadIosConfig(props);
+        loadWindowsPhoneConfig(props);
 
-        if(!hasAndroidConfiguration() && !hasIosConfiguration()){
-            throw new MissingConfigPropertyException("neither iOS nor Android properties has been loaded properly");
+        if(!hasAndroidConfiguration() && !hasIosConfiguration() && !hasWindowsPhoneConfiguration()){
+            throw new MissingConfigPropertyException("neither iOS nor Android nor WindowsPhone properties has been found, at least platform configuration is mandatory");
         }
 
         LOGGER.info(toString());
@@ -249,7 +281,15 @@ public class Configuration {
         return sourceAllowedExtensions;
     }
 
-    public String getIosSourceDir() {
+    public String getWpSourceDir() {
+		return wpSourceDir;
+	}
+
+	public String getWpTargetDir() {
+		return wpTargetDir;
+	}
+
+	public String getIosSourceDir() {
         return iosSourceDir;
     }
 
@@ -264,13 +304,18 @@ public class Configuration {
 	public void setIosTargetDensities(List<Density> iosTargetDensities) {
 		this.iosTargetDensities = iosTargetDensities;
 	}
+
+	@Override
+	public String toString() {
+		return "Configuration [androidSourceDensity=" + androidSourceDensity + ", androidSourceDir=" + androidSourceDir
+				+ ", androidTargetDir=" + androidTargetDir + ", androidDefaultTargetDensities=" + androidDefaultTargetDensities
+				+ ", iosSourceDir=" + iosSourceDir + ", iosTargetDir=" + iosTargetDir + ", iosTargetDensities=" + iosTargetDensities
+				+ ", wpSourceDir=" + wpSourceDir + ", wpTargetDir=" + wpTargetDir + ", sourceAllowedExtensions=" + sourceAllowedExtensions
+				+ ", preFiltersDescription=" + preFiltersDescription + ", postFiltersDescription=" + postFiltersDescription
+				+ ", hasIosConfiguration=" + hasIosConfiguration + ", hasAndroidConfiguration=" + hasAndroidConfiguration
+				+ ", hasWindowsPhoneConfiguration=" + hasWindowsPhoneConfiguration + ", recursiveLoad=" + recursiveLoad + "]";
+	}
 	
-    @Override
-    public String toString() {
-        return "Config [androidSourceDensity=" + androidSourceDensity + ", androidSourceDir=" + androidSourceDir + ", androidTargetDir="
-                + androidTargetDir + ", iosSourceDir=" + iosSourceDir + ", iosTargetDir=" + iosTargetDir
-                + ", androidDefaultTargetDensities=" + androidDefaultTargetDensities + ", sourceAllowedExtensions="
-                + sourceAllowedExtensions + "]";
-    }
+
 
 }

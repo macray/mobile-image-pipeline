@@ -9,10 +9,10 @@ public class PixelRoundingHalfUp implements PixelRounding {
 	private NumberFormat numberFormat;
 
 	public PixelRoundingHalfUp() {
-	 numberFormat = NumberFormat.getNumberInstance(Locale.US);
-	 numberFormat.setMaximumFractionDigits(0);
-	 numberFormat.setGroupingUsed(false);
-	 numberFormat.setRoundingMode(RoundingMode.HALF_UP);
+		numberFormat = NumberFormat.getNumberInstance(Locale.US);
+		numberFormat.setMaximumFractionDigits(0);
+		numberFormat.setGroupingUsed(false);
+		numberFormat.setRoundingMode(RoundingMode.HALF_UP);
 	}
 
 	@Override

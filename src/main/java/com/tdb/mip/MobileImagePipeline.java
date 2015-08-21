@@ -3,12 +3,14 @@ package com.tdb.mip;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.tdb.mip.pipeline.*;
+
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -27,6 +29,9 @@ public class MobileImagePipeline {
 
     @Inject
     IOSPipelineFactory iosPipelineFactory;
+    
+    @Inject
+    WindowsPhonePipelineFactory wpPipelineFactory;
 
     @Inject
     Configuration configuration;
@@ -85,10 +90,23 @@ public class MobileImagePipeline {
             }
         }
     }
+    
+    public void processWindowsPhoneAssets() {
+        if (configuration.hasWindowsPhoneConfiguration()) {
+            File sourceDir = new File(configuration.getWpSourceDir());
+            List<File> sourceFiles = new LinkedList<>();
+            loadSourceAssetFiles(sourceFiles, sourceDir, configuration.isRecursiveLoad());
+            for (File source : sourceFiles) {
+                Pipeline pipeline = wpPipelineFactory.createPipeline(source, configuration);
+                executor.execute(new WindowsPhonePipelineRunnable(pipeline, configuration));
+            }
+        }
+    }
 
     public void run() {
         processAndroidAssets();
         processIosAssets();
+        processWindowsPhoneAssets();
         executor.waitUntilEverythingHasBeenExecuted();
     }
 }
