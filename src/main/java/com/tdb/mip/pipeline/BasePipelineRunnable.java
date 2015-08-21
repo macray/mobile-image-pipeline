@@ -1,14 +1,5 @@
 package com.tdb.mip.pipeline;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-
-import org.apache.batik.transcoder.TranscoderException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.tdb.mip.Configuration;
 import com.tdb.mip.density.Density;
 import com.tdb.mip.density.DensityUtils;
@@ -16,6 +7,14 @@ import com.tdb.mip.exception.TooManyResizeFilterException;
 import com.tdb.mip.filter.Filter;
 import com.tdb.mip.filter.Resize;
 import com.tdb.mip.reader.ImageReader;
+import org.apache.batik.transcoder.TranscoderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
 
 public abstract class BasePipelineRunnable implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(BasePipelineRunnable.class);
@@ -54,6 +53,11 @@ public abstract class BasePipelineRunnable implements Runnable {
 	}
     
     private Resize removeResizeFilterFromPipeline() {
+    	// HACK: UGLY !! need to properly handle multi resize, and ability to disable resizing reordering
+    	if(pipeline.isDisallowResizeReordering()) {
+    		return null;
+    	}
+    	
         Iterator<Filter> iterator = pipeline.getFilters().iterator();
         Resize resize = null;
         while (iterator.hasNext()) {
@@ -97,23 +101,32 @@ public abstract class BasePipelineRunnable implements Runnable {
 			Density targetDensity) throws TranscoderException, IOException {
 		// compute target size ( = resizeRatio * densityRatio)
 		float densityRatio = DensityUtils.getRatio(sourceDensity, targetDensity);
-		int targetW = pipeline.getPixelRounding().round(originalImage.getWidth() * densityRatio * resizeFilterRatioW);
-		int targetH = pipeline.getPixelRounding().round(originalImage.getHeight() * densityRatio * resizeFilterRatioH);
+
+        int targetW, targetH;
 
 		BufferedImage transformedImage;
-		if (imageReader.supportResizing()) {
-		    // load the image to its final size
+		if (imageReader.supportResizing() && !pipeline.isDisallowResizeReordering()) {
+            targetW = pipeline.getPixelRounding().round(originalImage.getWidth() * densityRatio * resizeFilterRatioW);
+            targetH = pipeline.getPixelRounding().round(originalImage.getHeight() * densityRatio * resizeFilterRatioH);
+
+            // load the image to its final size
 		    imageReader.setOutputSize(targetW, targetH);
 		    transformedImage = imageReader.read(source);
 
-		    // apply filters
-		    transformedImage = applyFilters(transformedImage);
+            // apply filters
+            transformedImage = applyFilters(transformedImage);
 		} else {
-		    transformedImage = applyFilters(originalImage);
+            transformedImage = applyFilters(originalImage);
 
-		    // resize to its final size
-		    Resize resizeToTargetDensity = new Resize(targetW, targetH, pipeline.getPixelRounding());
-		    transformedImage = resizeToTargetDensity.applyTo(transformedImage);
+            // recompute the target size here for supporting filter which can resize orginal image size (like autocrop)
+            targetW = pipeline.getPixelRounding().round(transformedImage.getWidth() * densityRatio * resizeFilterRatioW);
+            targetH = pipeline.getPixelRounding().round(transformedImage.getHeight() * densityRatio * resizeFilterRatioH);
+
+            // resize to its final size
+		    if(!pipeline.isDisallowResizeReordering()) {
+		    	Resize resizeToTargetDensity = new Resize(targetW, targetH, pipeline.getPixelRounding());
+		    	transformedImage = resizeToTargetDensity.applyTo(transformedImage);
+		    }
 		}
 		return transformedImage;
 	}
