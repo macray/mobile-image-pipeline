@@ -83,8 +83,8 @@ public class Tint implements Filter {
         // we don't want to alter the alpha channel
         // int mix_a = tint.getAlpha();
         int mix_r = tint.getRed();
-        int mix_g = tint.getBlue();
-        int mix_b = tint.getGreen();
+        int mix_g = tint.getGreen();
+        int mix_b = tint.getBlue();
 
         for (int i = 0; i < pixels.length; i++) {
             int argb = pixels[i];
