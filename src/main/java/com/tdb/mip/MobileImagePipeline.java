@@ -57,6 +57,11 @@ public class MobileImagePipeline {
     private void loadSourceAssetFiles(List<File> files, File sourceFolder, boolean recursive) {
         for (final File fileEntry : sourceFolder.listFiles()) {
             if (fileEntry.isFile()) {
+                // ignore file starting with ._ specific for macos
+                if(fileEntry.getName().startsWith("._")){
+                    continue;
+                }
+
                 String extension = FilenameUtils.getExtension(fileEntry.getName());
                 if (configuration.getSourceAllowedExtensions().contains(extension)) {
                     files.add(fileEntry);
