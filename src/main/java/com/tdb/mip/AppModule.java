@@ -2,12 +2,7 @@ package com.tdb.mip;
 
 import com.google.inject.AbstractModule;
 import com.tdb.mip.filter.*;
-import com.tdb.mip.pipeline.AndroidPipelineFactory;
-import com.tdb.mip.pipeline.IOSPipelineFactory;
-import com.tdb.mip.pipeline.PipelineExecutor;
-import com.tdb.mip.pipeline.PipelineExecutorImpl;
-import com.tdb.mip.pipeline.WindowsPhonePipelineFactory;
-
+import com.tdb.mip.pipeline.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -32,6 +27,7 @@ public class AppModule extends AbstractModule {
         filterFactories.add(new HFlipFactory());
         filterFactories.add(new BlackAndWhiteFactory());
         filterFactories.add(new FillToFactory());
+        filterFactories.add(new FitSquareFactory());
 
         AndroidPipelineFactory androidPipelineFactory = new AndroidPipelineFactory();
         for (FilterFactory<?> filterFactory : filterFactories) {
@@ -69,5 +65,10 @@ public class AppModule extends AbstractModule {
         bind(Configuration.class).toInstance(configuration);
 
         bind(PipelineExecutor.class).to(PipelineExecutorImpl.class);
+/*
+        final ImageTagRegistry registry = ImageTagRegistry.getRegistry();
+        registry.register(new PNGRegistryEntry());
+        registry.register(new TIFFRegistryEntry());
+        */
     }
 }
