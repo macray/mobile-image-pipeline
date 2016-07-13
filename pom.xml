@@ -157,6 +157,7 @@
 				</configuration>
 			</plugin>
 
+			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -171,7 +172,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>com.tdb.mip.Main</mainClass>
+							<mainClass>com.tdb.mip.MobileImagePipeline</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -180,6 +181,32 @@
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			-->
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.4.3</version>
+				<configuration>
+					<finalName>mobile-image-pipeline-${project.version}</finalName>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <manifestEntries>
+                                <Main-Class>com.tdb.mip.MobileImagePipeline</Main-Class>
+                            </manifestEntries>
+                        </transformer>
+                    </transformers>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
 						</goals>
 					</execution>
 				</executions>

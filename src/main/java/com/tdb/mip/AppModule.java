@@ -28,6 +28,7 @@ public class AppModule extends AbstractModule {
         filterFactories.add(new BlackAndWhiteFactory());
         filterFactories.add(new FillToFactory());
         filterFactories.add(new FitSquareFactory());
+        filterFactories.add(new CenterFillToFactory());
 
         AndroidPipelineFactory androidPipelineFactory = new AndroidPipelineFactory();
         for (FilterFactory<?> filterFactory : filterFactories) {
