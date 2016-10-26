@@ -55,6 +55,14 @@
 			<artifactId>batik-rasterizer</artifactId>
 			<version>1.7</version>
 		</dependency>
+		<!-- add support to PNG embedded image-->
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-codec</artifactId>
+			<version>1.7</version>
+		</dependency>
+
+
 
 
 		<!-- Twelvemonkeys -->

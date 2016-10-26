@@ -10,7 +10,7 @@ import com.tdb.mip.density.IOSDensity;
 
 public class IOSPipelineRunnable extends BasePipelineRunnable {
 
-    public IOSPipelineRunnable(Pipeline pipeline,  Configuration configuration) {
+    public IOSPipelineRunnable(Pipeline pipeline, Configuration configuration) {
         super(pipeline, configuration);
     }
 
@@ -33,20 +33,24 @@ public class IOSPipelineRunnable extends BasePipelineRunnable {
 //        }
 //
 //    }
-    
+
     @Override
     public String computeOutputFilename(Density targetDensity) {
-    	 String defaultOutputFileName = configuration.getIosTargetDir() + "/" + pipeline.getOutFileName();
-         String extension = "." + FilenameUtils.getExtension(defaultOutputFileName);
-         String defaultOutputFileNameWithoutExt = defaultOutputFileName.replace(extension, "");
-         String output = defaultOutputFileNameWithoutExt+ targetDensity.getSuffix() + extension;
-     	
-         return output;
+        String defaultOutputFileName = configuration.getIosTargetDir() + "/" + pipeline.getOutFileName();
+        String extension = "." + FilenameUtils.getExtension(defaultOutputFileName);
+        String defaultOutputFileNameWithoutExt = defaultOutputFileName.replace(extension, "");
+        String output = defaultOutputFileNameWithoutExt + targetDensity.getSuffix() + extension;
+
+        return output;
     }
 
-	@Override
-	protected Density getSourceDensity() {
-		return IOSDensity.X3;
-	}
+    @Override
+    protected Density getSourceDensity() {
+        if (pipeline.getOverrideSourceDensity() != null) {
+            return pipeline.getOverrideSourceDensity();
+        } else {
+            return IOSDensity.X3;
+        }
+    }
 
 }

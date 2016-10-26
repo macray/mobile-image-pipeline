@@ -9,6 +9,7 @@ import com.tdb.mip.Configuration;
 import com.tdb.mip.density.Density;
 import com.tdb.mip.density.DensityUtils;
 import com.tdb.mip.density.AndroidDensity;
+import com.tdb.mip.filter.Resize;
 
 /**
  * Created by vaudauxr on 18/01/15.
@@ -21,6 +22,8 @@ public class AndroidPipelineFactory extends BasePipelineFactory {
         String fileName = file.getName();
         // an icon must be generated with a higher density
         List<Density> densities = configuration.getAndroidDefaultTargetDensities();
+        Pipeline pipeline = super.createPipeline(file, configuration);
+
         if (fileName.contains("-icon")) {
             // make the list modifiable
             densities = new ArrayList<>(densities);
@@ -30,13 +33,9 @@ public class AndroidPipelineFactory extends BasePipelineFactory {
             // make the list unmodifiable again
             densities = Collections.unmodifiableList(densities);
 
-            // remove "-icon" from the name
-            // because we have already process it
-            fileName = fileName.replaceFirst("-icon", "");
-            file = new File(fileName);
+            pipeline.getFilters().add(new Resize(192,192, pipeline.getPixelRounding()));
         }
 
-        Pipeline pipeline = super.createPipeline(file, configuration);
 
         pipeline.setTargetDensities(densities);
 

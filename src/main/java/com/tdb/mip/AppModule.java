@@ -40,6 +40,7 @@ public class AppModule extends AbstractModule {
         for (FilterFactory<?> filterFactory : filterFactories) {
             iosPipelineFactory.registerFilterFactory(filterFactory);
         }
+        iosPipelineFactory.addMarker("icon");
 
         WindowsPhonePipelineFactory wpPipelineFactory = new WindowsPhonePipelineFactory();
         for (FilterFactory<?> filterFactory : filterFactories) {

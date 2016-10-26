@@ -18,10 +18,19 @@ public class Pipeline {
     private String outFileName;
     private List<Density> targetDensities;
     private boolean disallowResizeReordering = false;
-    
+    private Density overrideSourceDensity = null;
+
     public Pipeline() {
     }
-    
+
+    public Density getOverrideSourceDensity() {
+        return overrideSourceDensity;
+    }
+
+    public void setOverrideSourceDensity(Density overrideSourceDensity) {
+        this.overrideSourceDensity = overrideSourceDensity;
+    }
+
     public boolean isDisallowResizeReordering() {
 		return disallowResizeReordering;
 	}
